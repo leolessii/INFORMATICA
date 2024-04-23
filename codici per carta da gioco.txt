@@ -57,3 +57,95 @@ private bool isDragging;
             }
         }
 
+
+
+
+
+//
+        private bool isDragging;
+        private Point offset;
+
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
+
+        private void Card_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            isDragging = true;
+            offset = e.GetPosition(card);
+            card.CaptureMouse();
+        }
+
+        private void Card_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (isDragging)
+            {
+                Point currentPosition = e.GetPosition(canvas);
+                double newX = currentPosition.X - offset.X;
+                double newY = currentPosition.Y - offset.Y;
+
+                Canvas.SetLeft(card, newX);
+                Canvas.SetTop(card, newY);
+            }
+        }
+
+        private void Card_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            isDragging = false;
+            card.ReleaseMouseCapture();
+
+            DropArea_Drop(this, null);
+            
+        }
+        private void DropArea_Drop(object sender, DragEventArgs e)
+        {
+            MessageBox.Show("Carta rilasciata nell'area di destinazione: "+card);
+            /*
+            if (e.Data.GetDataPresent(DataFormats.StringFormat))
+            {
+                
+                string dataString = e.Data.GetData(DataFormats.StringFormat) as string;
+                if (!string.IsNullOrEmpty(dataString))
+                {
+                    // Effettua le operazioni necessarie al rilascio della carta sull'area di destinazione
+                    MessageBox.Show("Carta rilasciata nell'area di destinazione: " + dataString);
+                }
+            }
+            */
+        }
+
+    }
+}
+
+
+
+
+
+
+// 
+
+
+<Window x:Class="spostoCartaWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:spostoCartaWPF"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Canvas Name="canvas" Background="White">
+            <Border Name="card" Width="100" Height="150" Background="LightBlue" Canvas.Left="100" Canvas.Top="100"
+                MouseLeftButtonDown="Card_MouseLeftButtonDown" MouseMove="Card_MouseMove" MouseLeftButtonUp="Card_MouseLeftButtonUp" Panel.ZIndex="1" >
+                <TextBlock Text="Carta" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <Border Name="dropArea" Width="200" Height="200" Background="LightGray" VerticalAlignment="Bottom" HorizontalAlignment="Left"
+                AllowDrop="True" Drop="DropArea_Drop" Canvas.Left="467" Canvas.Top="75" >
+                <TextBlock Text="Area di destinazione" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+        </Canvas>
+    </Grid>
+</Window>
+
+
